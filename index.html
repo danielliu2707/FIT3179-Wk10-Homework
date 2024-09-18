@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Import Vega & Vega-Lite -->
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.20.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.1.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.17.0"></script>
+
+    <!-- Import Pure.css -->
+    <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.6/build/pure-min.css">
+
+    <!-- CSS file -->
+    <link rel="stylesheet" type="text/css" href="css/styles.css" media="all" />
+</head>
+<body>
+    <div class="page">
+        <div class="pure-g">
+            <div class="pure-u-1-2">
+                <!-- Content for the first column -->
+                <p>Column 1</p>
+                <!-- Embedding of radial chart -->
+                <div id="radial_chart" class="radial-chart-container"></div>
+            </div>
+            <div class="pure-u-1-2">
+                <!-- Content for the second column -->
+                <p>Column 2</p>
+                <div id="streamgraph" class="streamgraph-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Renders visualizations into HTML elements -->
+    <script type="text/javascript">
+        var spec1 = "js/radial_chart.vg.json";
+        var spec2 = "js/streamgraph.vg.json";
+
+        vegaEmbed("#radial_chart", spec2, {actions: false}).then(function (result) {
+            // Access the Vega view instance (https://vega.github.io/vega/docs/api/view/) as result.view
+        }).catch(console.error);
+
+        vegaEmbed("#streamgraph", spec3, {actions: false}).then(function (result) {
+            // Access the Vega view instance (https://vega.github.io/vega/docs/api/view/) as result.view
+        }).catch(console.error);
+    </script>
+</body>
+</html>

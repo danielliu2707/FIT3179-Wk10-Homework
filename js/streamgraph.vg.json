@@ -1,36 +1,167 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "width": 500,
-  "height": 500,
-  "title": "Change in Statewise Average Temperatures by Month (2023)",
-  "data": {"url": "https://raw.githubusercontent.com/danielliu2707/FIT3179/main/data/state_temp.csv"},
-  "mark": "area",
-  "encoding": {
-    "x": {
-      "timeUnit": "month", "field": "Month",
-      "axis": {"domain": false, "format": "%B", "tickSize": 0}
+  "width": 600,
+  "height": 350,
+  "title": {"text": "Average Temperature vs Proportional Rainfall by State", "dy": -30},
+  "data": {
+    "url": "https://raw.githubusercontent.com/danielliu2707/FIT3179/main/data/state_temp_rain_humid.csv"
+  },
+  "params": [
+    {
+      "name": "Temperature_Above",
+      "value": 5,
+      "bind": {
+        "input": "range",
+        "min": 5,
+        "max": 33,
+        "step": 1,
+        "name": "Min Temperature (°C): "
+      }
+    }   
+  ],
+  "transform": [
+    {"filter": "datum.TemperatureMean > Temperature_Above"},
+    {
+      "calculate": "datum.officialnamestate === 'Queensland' ? 'January in Queensland saw heavy rainfall that' : ''",
+      "as": "Line1"
     },
-    "y": {
-      "aggregate": "sum", "field": "TemperatureMean",
-      "axis": null,
-      "stack": "center"
-    },
-    "color": {
-        "field": "officialnamestate",
-        "type": "nominal",
-        "scale": {
-        "domain": ["New South Wales", "Queensland", "South Australia", "Tasmania", "Territories", "Victoria", "Western Australia"],
-        "range": ["#79B1DA", "#F18A72", "#E5D48C", "#6BBAD7", "#C88E9F", "#B2C746", "#DDDDDD"]
+    {
+      "calculate": "datum.officialnamestate === 'Queensland' ? 'constituted 49.60% of all rainfall across Australia in January' : ''",
+      "as": "Line2"
+    }
+  ],
+  "layer": [
+    {
+      "mark": "circle",
+      "encoding": {
+        "x": {
+          "field": "TemperatureMean",
+          "title": "Average Temperature",
+          "type": "quantitative",
+          "axis": {"tickCount": 8, "labelFontSize": 12, "titleFontSize": 12, "labelPadding": 15, "titlePadding": 15},
+          "scale": {"domain": [5, 35]}
+          
         },
-        "legend": {
-              "title": "State",
-              "titleAnchor": "middle",
-              "titlePadding": 13
-              }
+        "y": {
+          "field": "RainProportion",
+          "type": "quantitative",
+          "title": "Proportional Rainfall",
+          "axis": {"tickCount": 6, "labelFontSize": 12, "titleFontSize": 12, "labelPadding": 15, "titlePadding": 15},
+          "scale": {"domain": [0, 50]}
+        },
+        "color": {
+          "field": "officialnamestate",
+          "type": "nominal",
+          "scale": {
+            "domain": ["New South Wales", "Queensland", "South Australia", "Tasmania", "Territories", "Victoria", "Western Australia"],
+            "range": ["#3585bc", "#fe711a", "#856ef2", "#195f53", "#e685c8", "#97675d", "#2fc5d4"]
+          },
+          "legend": {
+            "title": "",
+            "orient": "bottom",
+            "labelFont": "Roboto",
+            "labelFontSize": 13
+          }
+        },
+        "opacity": {"value": 0.6},
+        "tooltip": [
+          {"field": "officialnamestate", "type": "nominal", "title": "State"},
+          {"field": "MonthName", "type": "nominal", "title": "Month"},
+          {"field": "TemperatureMean", "title": "Temperature (°C)", "type": "quantitative", "format": ".2f"},
+          {"field": "RainProportion", "title": "Rainfall (%)", "type": "quantitative", "format": ".2f"},
+          {"field": "RelativeHumidityMean", "title": "Humidity (%)", "type": "quantitative", "format": ".2f"}
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 10,
+        "fontSize": 11,
+        "fontStyle": "italic",
+        "color": "grey"
       },
-    "tooltip": [
-              {"field": "officialnamestate", "type": "nominal", "title": "State"},
-              {"field": "TemperatureMean", "type": "nominal", "title": "Average Temperature (°C)", "format": ".2f"}
-            ]
+      "encoding": {
+        "text": {"field": "Line1"},
+        "color": {"value": "gray"},
+        "opacity": {
+          "condition": {
+            "test": "datum['officialnamestate'] == 'Queensland' && datum['MonthName'] == 'January'",
+            "value": 1
+          },
+          "value": 0
+        },
+        "x": {"value": 125},
+        "y": {"value": 50}
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 10,
+        "fontSize": 11,
+        "fontStyle": "italic",
+        "color": "grey"
+      },
+      "encoding": {
+        "text": {"field": "Line2"},
+        "color": {"value": "grey"},
+        "opacity": {
+          "condition": {
+            "test": "datum['officialnamestate'] == 'Queensland' && datum['MonthName'] == 'January'",
+            "value": 1
+          },
+          "value": 0
+        },
+        "x": {"value": 125},
+        "y": {"value": 67}
+      }
+    },
+    {
+      "mark": "rule",
+      "encoding": {
+        "x": {"value": 250},
+        "x2": {"value": 400},
+        "y": {"value": 35},
+        "y2": {"value": 25},
+        "color": {"value": "gray"},
+        "strokeWidth": {"value": 2},
+        "opacity": {
+          "condition": {
+            "test": "datum['officialnamestate'] == 'Queensland' && datum['MonthName'] == 'January'",
+            "value": 1
+          },
+          "value": 0
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "shape": "triangle",
+        "color": "grey",
+        "size": 50,
+        "angle": 180
+      },
+      "encoding": {
+        "x": {"value": 400},
+        "y": {"value": 25},
+        "opacity": {
+          "condition": {
+            "test": "datum['officialnamestate'] == 'Queensland' && datum['MonthName'] == 'January'",
+            "value": 1
+          },
+          "value": 0
+        }
+      }
+    }
+  ],
+  "config": {
+    "title": {"fontSize": 15}
   }
 }

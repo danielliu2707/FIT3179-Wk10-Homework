@@ -18,13 +18,11 @@
         <div class="pure-g">
             <div class="pure-u-1-2">
                 <!-- Content for the first column -->
-                <p>Column 1</p>
                 <!-- Embedding of radial chart -->
                 <div id="radial_chart" class="radial-chart-container"></div>
             </div>
             <div class="pure-u-1-2">
                 <!-- Content for the second column -->
-                <p>Column 2</p>
                 <div id="streamgraph" class="streamgraph-container"></div>
             </div>
         </div>
@@ -35,11 +33,11 @@
         var spec1 = "js/radial_chart.vg.json";
         var spec2 = "js/streamgraph.vg.json";
 
-        vegaEmbed("#radial_chart", spec2, {actions: false}).then(function (result) {
+        vegaEmbed("#radial_chart", spec1, {actions: false}).then(function (result) {
             // Access the Vega view instance (https://vega.github.io/vega/docs/api/view/) as result.view
         }).catch(console.error);
 
-        vegaEmbed("#streamgraph", spec3, {actions: false}).then(function (result) {
+        vegaEmbed("#streamgraph", spec2, {actions: false}).then(function (result) {
             // Access the Vega view instance (https://vega.github.io/vega/docs/api/view/) as result.view
         }).catch(console.error);
     </script>

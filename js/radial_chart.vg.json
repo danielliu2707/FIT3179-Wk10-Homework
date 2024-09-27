@@ -1,63 +1,109 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "width": 500,
-  "height": 500,
-  "title": "Statewise Contribution to Total Rainfall (2010-2023)",
-
-  "data": {
-    "url": "https://raw.githubusercontent.com/danielliu2707/FIT3179/main/data/state_rainfall_by_month.csv"
-  },
+  "height": 400,
+  "title": {"text": "Average Temperatures Across Australian Weather Recordings", "dy": -30},
 
   "params": [
-    {
-      "name": "Month_Select",
-      "value": 1,
-      "bind": {
-        "input": "range",
-        "min": 1,
-        "max": 12,
-        "step": 1,
-        "name": "Month: "
-      }
-    }
+    {"name": "Country_selection",
+        "bind": {
+          "input": "select",
+          "options": [
+            null,
+            "Queensland",
+            "New South Wales",
+            "South Australia",
+            "Victoria",
+            "Northern Territory",
+            "Tasmania", 
+            "Western Australia",
+            "Australian Capital Territory"
+          ],
+          "labels": [
+            "Show All",
+            "Queensland",
+            "New South Wales",
+            "South Australia",
+            "Victoria",
+            "Northern Territory",
+            "Tasmania", 
+            "Western Australia",
+            "ACT"
+          ],
+          "name": "Select State:"
+        }
+        }
+
   ],
-
-  "transform": [
-    {"filter": "datum.Month == Month_Select"},
-    {
-      "calculate": "round(datum.RainProportion, 2)",
-      "as": "RainProportionRounded"
-    }
-  ],
-
-  "encoding": {
-    "theta": {"field": "RainProportionRounded", "type": "quantitative", "stack": true},
-    "radius": {"field": "RainProportionRounded", "scale": {"type": "sqrt", "zero": true, "rangeMin": 20}},
-    "color": {
-      "field": "officialnamestate",
-      "type": "nominal",
-      "scale": {
-        "domain": ["New South Wales", "Queensland", "South Australia", "Tasmania", "Territories", "Victoria", "Western Australia"],
-        "range": ["#79B1DA", "#F18A72", "#E5D48C", "#6BBAD7", "#C88E9F", "#B2C746", "#DDDDDD"]
-      },
-      "legend": {
-            "title": "State",
-            "titleAnchor": "middle",
-            "titlePadding": 13
-            }
-    },
-    "tooltip": [
-            {"field": "officialnamestate", "type": "nominal", "title": "State"},
-            {"field": "RainProportion", "type": "nominal", "title": "Rain Contribution (%)", "format": ".2f"}
-          ]
-  },
-
   "layer": [
     {
-      "mark": {"type": "arc", "innerRadius": 20, "stroke": "#fff"},
+      "data": {
+        "url": "https://raw.githubusercontent.com/danielliu2707/FIT3179/main/js/aus_states.topojson",
+        "format": {"type": "topojson", "feature": "collection"}
+      },
+      "mark": {"type": "geoshape", "fill": "lightgray", "stroke": "white"}
+    },
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/danielliu2707/FIT3179/main/data/weather_final_map_data.csv"
+      },
+      "transform": [
+        {"filter": "Country_selection == null || datum.officialnamestate == Country_selection"}
+      ],
+      "mark": {"type": "circle", "size": 70},
       "encoding": {
-        "order": {"field": "RainProportionRounded", "sort": "descending"}
+        "longitude": {
+          "field": "longtitude",
+          "type": "quantitative"},
+        "latitude": {
+          "field": "lattitude",
+          "type": "quantitative"},
+        "color": {
+          "field": "AverageTemperature",
+          "type": "quantitative",
+          "title": "Temperature",
+          "scale": {
+            "scheme": "yelloworangered",
+            "domain": [0, 5, 10, 15, 20, 25, 30]
+          },
+          "legend": {
+            "title": "Temperature (°C)",
+            "values": [5, 10, 15, 20, 25, 30],
+            "titleAnchor": "middle",
+            "titlePadding": 15
+          }
+        },
+        "size": {
+          "field": "TotalRainfall",
+          "type": "quantitative",
+          "legend": {
+            "title": "Total Rainfall (mm)",
+            "format": ".1s",
+            "titleAnchor": "middle",
+            "titlePadding": 13
+
+            },
+          "scale": {
+            "type": "threshold",
+            "domain": [0, 100, 1000, 2000, 3000],
+            "range": [10, 30, 60, 100]
+          }
+        },
+        "tooltip": [
+            {"field": "officialnamestate", "type": "nominal", "title": "State"},
+            {"field": "officialnamesuburb", "type": "nominal", "title": "Closest Suburb"},
+            {"field": "AverageTemperature", "type": "quantitative", "title": "Average Temperature (°C)", "format": ".2f"},
+            {"field": "TotalRainfall", "type": "quantitative", "title": "Total Rainfall (mm)",
+            "format": ",.2f"}
+          ],
+        "opacity": {
+          "value": 0.7
+        }
       }
     }
-  ]
+  ],
+
+  "config": {
+    "title": {"fontSize": 17}
+  }
 }
